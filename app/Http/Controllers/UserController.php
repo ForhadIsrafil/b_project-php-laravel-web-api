@@ -96,9 +96,9 @@ class UserController extends Controller
             $user->email_verified_at = now();
             $user->save();
 
-            return Response(["message"=> "User Activated"], 200);
+            return Response(["message" => "User Activated"], 200);
         } catch (\Exception $err) {
-            return Response(["message"=> "User not found"], 404);
+            return Response(["message" => "User not found"], 404);
         }
 
     }
