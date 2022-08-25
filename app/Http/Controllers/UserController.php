@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -33,6 +34,8 @@ class UserController extends Controller
             $user->name = $validator->getData()['name'];
             $user->email = $validator->getData()['email'];
             $user->password = Hash::make($validator->getData()['password']);
+            $user->setRememberToken(Str::random(70));
+
             $user->save();
 
             // send verification code to the email
@@ -62,7 +65,7 @@ class UserController extends Controller
 
     }
 
-    public function authenticate(Request $request)
+    public function login(Request $request)
     {
         $validator = Validator::make($request->only('email', 'password'), [
             "email" => "required|string|email|max:255",
@@ -82,6 +85,22 @@ class UserController extends Controller
             $token = $user->createToken('auth_token')->plainTextToken;
             return Response(['access_token' => $token, 'token_type' => 'Bearer',], 200);
         }
+    }
+
+    public function activate_account(Request $request, $token)
+    {
+        $remember_token = $token;
+        try {
+            $user = User::where('remember_token', $token)->firstOrFail();
+            $user->remember_token = Null;
+            $user->email_verified_at = now();
+            $user->save();
+
+            return Response(["message"=> "User Activated"], 200);
+        } catch (\Exception $err) {
+            return Response(["message"=> "User not found"], 404);
+        }
+
     }
 
     /**
