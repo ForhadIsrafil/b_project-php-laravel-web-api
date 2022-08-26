@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -40,6 +41,8 @@ class UserController extends Controller
 
             // send verification code to the email
             echo $user->email;
+            env('MAILER_DSN');
+            Mail::to($request->user())->send(dfdf));
 
             $success = true;
             $message = "User register successfully";
@@ -110,6 +113,7 @@ class UserController extends Controller
      */
     public function index()
     {
+        $u = User::query()->where('name', 'forhad')->firstOr();
         // Get the currently authenticated user...
         $user = Auth::user();
 
