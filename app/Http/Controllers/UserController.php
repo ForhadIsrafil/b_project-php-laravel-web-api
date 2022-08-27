@@ -14,17 +14,17 @@ use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
-//    public function __construct()
-//    {
-//        $this->middleware('auth');
-//    }
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => ['login', 'register', 'activate_account', 'logout']]);
+    }
 
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             "name" => "required|string|max:255",
             "email" => "required|string|email|max:255|unique:users",
-            "password" => "required|string|min:8"
+            "password" => "required|string|min:8|max:50"
         ]);
         if ($validator->fails()) {
             return response($validator->errors(), 406);
@@ -42,7 +42,7 @@ class UserController extends Controller
             // send verification code to the email
             echo $user->email;
             env('MAILER_DSN');
-            Mail::to($request->user())->send(dfdf));
+            //  Mail::to($request->user())->send('dfdf');
 
             $success = true;
             $message = "User register successfully";
@@ -82,11 +82,13 @@ class UserController extends Controller
 
         if (Auth::attempt($credentials)) {
             // Authentication passed...
-            echo Auth::attempt($credentials); // 1 if auth user else 0
+            echo Auth::attempt($credentials); // 1==true if auth user else 0==false
             $user = User::where('email', $request['email'])->firstOrFail();
 
             $token = $user->createToken('auth_token')->plainTextToken;
             return Response(['access_token' => $token, 'token_type' => 'Bearer',], 200);
+        } else {
+            return Response(['message' => "Unauthorized!"], 404);
         }
     }
 
@@ -104,6 +106,12 @@ class UserController extends Controller
             return Response(["message" => "User not found"], 404);
         }
 
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        return Response(status: 403);
     }
 
     /**
