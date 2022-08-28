@@ -8,10 +8,10 @@ use Illuminate\Http\Response;
 
 class BlogController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth', ['except' => []]);
-    }
+//    public function __construct()
+//    {
+//        $this->middleware('auth', ['except' => []]);
+//    }
 
     /**
      * Display a listing of the resource.
@@ -20,7 +20,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        return Response(Blog::all()->sortByDesc(), 200);
+        return Response(Blog::all(), 200);
     }
 
     /**
