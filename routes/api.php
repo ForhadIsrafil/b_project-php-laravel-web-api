@@ -27,3 +27,4 @@ Route::get('user/logout', 'App\Http\Controllers\UserController@logout');
 
 //Blogs
 Route::middleware('auth:sanctum')->get('blogs', 'App\Http\Controllers\BlogController@index');
+Route::middleware('auth:sanctum')->get('blogs/{id}', 'App\Http\Controllers\BlogController@show');
