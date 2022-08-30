@@ -22,6 +22,7 @@ class BlogFactory extends Factory
     public function definition()
     {
         return [
+            'id' => fake()->uuid(),
             'user_id' => User::factory(),
             'article' => fake()->realText()
         ];

@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\BlogResource;
 use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use PhpParser\Node\Stmt\Return_;
+use Psy\Util\Str;
+use Ramsey\Uuid\Uuid;
 
 class BlogController extends Controller
 {
@@ -21,7 +26,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        return Response(Blog::all(), 200);
+        return Response(Blog::paginate(), 200);
     }
 
     /**
@@ -29,9 +34,35 @@ class BlogController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $valid = Validator::make($request->only('article', 'image'), [
+            'article' => 'required',
+            'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048'
+        ]);
+        if ($valid->fails()) {
+            return Response($valid->errors(), 406);
+        }
+        try {
+            $name = $request->file('image')->getClientOriginalName();
+            $path = $request->file('image')->store('blogs/images');
+            $file = $request->file('image')->getContent();
+
+            $blog = new Blog();
+//        $blog->name = $name;
+            $blog->id = Uuid::uuid4();
+            $blog->user_id = Auth::id();
+            $blog->article = $request->article;
+            $blog->image = $path;
+            $blog->image_binary = $file;
+            $blog->save();
+
+            return Response(["status" => "Object create"], 201);
+        } catch (\Exception $error) {
+            echo Str($error);
+            return Response(["status" => $error->getMessage()], 204);
+        }
+
     }
 
     /**
@@ -53,8 +84,8 @@ class BlogController extends Controller
      */
     public function show($id)
     {
-        $blog = Blog::find($id);
-        return Response(new BlogResource($blog), 200);
+        $blog = Blog::query()->where('id', $id)->first();
+        return Response($blog, 200);
     }
 
     /**
