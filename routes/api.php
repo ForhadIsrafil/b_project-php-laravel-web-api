@@ -23,7 +23,7 @@ Route::get('user', 'App\Http\Controllers\UserController@index');
 Route::post('user/register', 'App\Http\Controllers\UserController@register');
 Route::post('user/login', 'App\Http\Controllers\UserController@login');
 Route::get('user/token/{token}', 'App\Http\Controllers\UserController@activate_account');
-Route::get('user/logout', 'App\Http\Controllers\UserController@logout');
+Route::middleware('auth:sanctum')->get('user/logout', 'App\Http\Controllers\UserController@logout');
 
 //Blogs
 Route::middleware('auth:sanctum')->get('blogs', 'App\Http\Controllers\BlogController@index');

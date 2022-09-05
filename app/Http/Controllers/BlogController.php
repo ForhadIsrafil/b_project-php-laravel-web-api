@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\BlogResource;
 use App\Models\Blog;
@@ -26,7 +27,8 @@ class BlogController extends Controller
      */
     public function index()
     {
-        return Response(Blog::paginate(), 200);
+        $blogs = DB::table('blogs')->orderBy('id')->paginate(20, ['id', 'user_id', 'article', 'image', 'created_at', 'updated_at']);
+        return Response($blogs, 200);
     }
 
     /**
@@ -45,7 +47,7 @@ class BlogController extends Controller
         }
         try {
             $name = $request->file('image')->getClientOriginalName();
-            $path = $request->file('image')->store('blogs/images');
+            $path = $request->file('image')->store('images', 'blogs');
             $file = $request->file('image')->getContent();
 
             $blog = new Blog();
@@ -57,7 +59,7 @@ class BlogController extends Controller
             $blog->image_binary = $file;
             $blog->save();
 
-            return Response(["status" => "Object create"], 201);
+            return Response(["status" => "Object create"], Response::HTTP_CREATED);
         } catch (\Exception $error) {
             echo Str($error);
             return Response(["status" => $error->getMessage()], 204);
