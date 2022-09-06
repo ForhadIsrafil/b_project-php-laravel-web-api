@@ -29,3 +29,7 @@ Route::middleware('auth:sanctum')->get('user/logout', 'App\Http\Controllers\User
 Route::middleware('auth:sanctum')->get('blogs', 'App\Http\Controllers\BlogController@index');
 Route::middleware('auth:sanctum')->get('blogs/{id}', 'App\Http\Controllers\BlogController@show');
 Route::middleware('auth:sanctum')->post('blogs/create', 'App\Http\Controllers\BlogController@create');
+
+
+// random images
+Route::get('random/images', 'App\Http\Controllers\BlogController@random_images');

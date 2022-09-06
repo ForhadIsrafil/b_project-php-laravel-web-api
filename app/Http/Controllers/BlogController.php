@@ -12,6 +12,7 @@ use Illuminate\Http\Response;
 use PhpParser\Node\Stmt\Return_;
 use Psy\Util\Str;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class BlogController extends Controller
 {
@@ -122,5 +123,11 @@ class BlogController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function random_images()
+    {
+        $single_image = DB::table('Blogs')->get(['id','image'])->random(1)->first();
+        return Response(["image_link" => $single_image], ResponseAlias::HTTP_OK);
     }
 }
