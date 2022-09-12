@@ -17,7 +17,8 @@ class ShortLinksFactory extends Factory
     public function definition()
     {
         return [
-            //
+            "original_link"=> fake()->url(),
+            "temp_link"=> fake()->randomDigit(),
         ];
     }
 }
